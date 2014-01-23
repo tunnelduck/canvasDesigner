@@ -1,0 +1,21 @@
+﻿@{ Layout = null; }
+
+    @Scripts.Render("~/bundles/jquery")
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+
+<div id="body">
+    <section ng-controller="DesignerController">
+        <a ng-click="addText()" class="btn btn-default">Add Text</a>
+    </section>
+    <div class="designer-canvas-container" style="position: relative; display: inline-block; width: 500px; height: 489px;">
+        
+    </div>
+
+    <script src="/Scripts/require.js" data-main="/Scripts/Designer/main"></script>
+    
+    <style>
+        .designer-canvas-container { width: 500px;height: 489px;border: 1px solid #000; background: url('/Images/Designer/gildan_shortsleeve_tee_front.png')}
+    </style>
+
+</div>
