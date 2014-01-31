@@ -1,6 +1,6 @@
 ﻿define(['Elements/textElement'], function (textElement) {
 
-    var scene = function () {
+    var scene = function (initialParams) {
 
         var self = this;
         
@@ -9,13 +9,43 @@
         var elements = [];
         var offset = null;
 
-        self.addText = function(text) {
-            var newTextElement = new textElement(text);
+        self.addText = function(initialParams) {
+            var newTextElement = new textElement(initialParams);
+
+            self.selectedElement = newTextElement;
 
             elements.push(newTextElement);
             //todo: add this via angular
             $(".designer-canvas-container").append(newTextElement.canvas);
             $(".designer-canvas-container").append(newTextElement.elementControls.canvas);
+        };
+
+        self.setTextColor = function(color) {
+            self.selectedElement.setColor(color);
+        };
+        
+        self.updateText = function (text) {
+            self.selectedElement.updateText(text);
+        };
+
+        self.getDesignerProperties = function() {
+            return self.selectedElement.getDesignerProperties();
+        };
+
+        self.center = function() {
+            self.selectedElement.center();
+        };
+
+        self.setTextFont = function(fontName) {
+            self.selectedElement.setTextFont(fontName);
+        };
+        
+        self.setTextSize = function (size) {
+            self.selectedElement.setTextSize(size);
+        };
+        
+        self.setRotation = function (rotation) {
+            self.selectedElement.setRotation(rotation);
         };
 
         var privateFunctions = {
@@ -24,19 +54,23 @@
 
                 var i, matchedElement;
                 for (i = 0; i < elements.length; ++i) {
-                    if (elements[i].isInElement(x - offset.left, y - offset.top) &&
-                        (!matchedElement || elements[i].layerOrder > matchedElement.layerOrder)) {
-                        matchedElement = elements[i];
+                    if (elements[i].isInElement(x - offset.left, y - offset.top)) {
+                        
+                        if (elements[i] == self.selectedElement) {
+                            //currently selected element gets priority over anything else
+                            return elements[i];
+                        }
+
+                        if (!matchedElement || (elements[i].layerOrder > matchedElement.layerOrder)) {
+                            matchedElement = elements[i];
+                        }
+
                     }
                 }
                 return matchedElement;
             },
             getElementClicked: function(x, y) {
-
                 var matchedElement = privateFunctions.getElementOver(x, y);
-                if (matchedElement) {
-                    matchedElement.click(x - offset.left, y - offset.top);
-                }
                 return matchedElement;
             },
             getCursorType: function(x, y) {
@@ -51,40 +85,57 @@
 
         (function init() {
 
-            var sceneDiv = $($.parseHTML('<div style="position:absolute;height:489px;width:500px;z-index:9999"></div>'));
+            var sceneDiv = $($.parseHTML('<div style="position:absolute;height:489px;width:500px;z-index:888"></div>'));
             $(".designer-canvas-container").append(sceneDiv);
 
             offset = sceneDiv.offset();
-            var isDragging = false;
             var prevMouseLocation;
 
             sceneDiv.mousedown(function (e) {
 
-                var currentElement = privateFunctions.getElementClicked(e.clientX, e.clientY);
-                if(!currentElement) {
+                var currentElement = privateFunctions.getElementClicked(e.pageX, e.pageY);
+                if (!currentElement) {
+                    //clicked on nothing
+                    if (self.selectedElement) {
+                        self.selectedElement.unselect();
+                        self.selectedElement = null;
+                        initialParams.unselect();
+                    }
+
+                    return;
+                }
+                
+                if (self.selectedElement != currentElement) {
+                    if (self.selectedElement) {
+                        self.selectedElement.unselect();
+                    }
+                    self.selectedElement = currentElement;
+                    initialParams.select(self.selectedElement);
+                }
+
+                self.selectedElement.registerClick(e.pageX - offset.left, e.pageY - offset.top);
+
+
+                if (currentElement.getCurrentOperation() == 'delete') {
+
                     return;
                 }
 
-                prevMouseLocation = { x: e.clientX, y: e.clientY };
+                prevMouseLocation = { x: e.pageX, y: e.pageY };
 
                 $(window).mousemove(function (e1) {
 
-                    var newMouseLocation = { x: e1.clientX, y: e1.clientY };
+                    var newMouseLocation = { x: e1.pageX, y: e1.pageY };
                     var changeAmounts = { x: newMouseLocation.x - prevMouseLocation.x, y: newMouseLocation.y - prevMouseLocation.y };
                     prevMouseLocation = newMouseLocation;
 
-                    isDragging = true;
-
-                    currentElement.drag(changeAmounts, newMouseLocation);
+                    currentElement.drag(changeAmounts, { x: newMouseLocation.x - offset.left, y: newMouseLocation.y - offset.top });
 
                 });
             }).mouseup(function () {
-                var wasDragging = isDragging;
-                isDragging = false;
-                $(window).unbind("mousemove");
-                if (!wasDragging) {
 
-                }
+                $(window).unbind("mousemove");
+
             });
 
 

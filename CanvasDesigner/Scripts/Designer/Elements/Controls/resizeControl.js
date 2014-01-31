@@ -1,18 +1,17 @@
 ﻿define(['Logic/collision'], function (collision) {
-
     var rotateControl = function () {
-        
+
         var self = this;
-        var rotateImage = null;
+        var resizeImage = null;
 
-        self.controlType = 'rotate';
-
+        self.controlType = 'resize';
+        
         self.isPointInArea = function (point, boundingBox, rotation) {
 
             var origin = { x: boundingBox.x + boundingBox.width / 2, y: boundingBox.y + boundingBox.height / 2 };
 
             var result = collision.isPointInArea(point,
-                { x: boundingBox.width + boundingBox.x + 10, y: boundingBox.y - 30, width: 20, height: 20 },
+                { x: boundingBox.width + boundingBox.x + 10, y: boundingBox.y + boundingBox.height + 10, width: 20, height: 20 },
                 origin, rotation);
 
             return result;
@@ -26,20 +25,25 @@
             canvasContext.translate(boundingBox.x + (boundingBox.width / 2), boundingBox.y + (boundingBox.height / 2));
             canvasContext.rotate(rotation * (Math.PI / 180));
 
-            if (!rotateImage) {
+            var halfWidth = boundingBox.width / 2,
+                halfHeight = boundingBox.height / 2;
 
-                rotateImage = new Image();
-                rotateImage.onload = function() {
-                    canvasContext.drawImage(rotateImage, boundingBox.width / 2 + 10, -boundingBox.height / 2 - 30);
+            if (!resizeImage) {
+
+                resizeImage = new Image();
+                resizeImage.onload = function () {
+                    canvasContext.drawImage(resizeImage, halfWidth + 20, -halfHeight - 15);
                 };
-                rotateImage.src = "/images/designer/rotate-handle.png";
+                resizeImage.src = "/images/designer/resize-handle.png";
             } else {
-                canvasContext.drawImage(rotateImage, boundingBox.width / 2 + 10, -boundingBox.height / 2 - 30);
+                canvasContext.drawImage(resizeImage, halfWidth + 10, halfHeight + 10);
             }
 
             canvasContext.restore();
+
         };
+
     };
 
     return rotateControl;
-})
+});

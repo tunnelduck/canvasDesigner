@@ -169,6 +169,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
+    <Content Include="Content\bootstrap-responsive.css" />
+    <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
@@ -225,6 +227,7 @@
     <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="favicon.ico" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
     <Content Include="Areas\HelpPage\Views\Shared\_Layout.cshtml" />
@@ -237,14 +240,24 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\HelpPageApiModel.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
+    <Content Include="Images\Designer\font-selection.png" />
+    <Content Include="Images\Designer\resize-handle.png" />
     <Content Include="Images\Designer\rotate-handle.png" />
+    <Content Include="Images\Designer\trash-handle.png" />
     <Content Include="Images\Designer\wootText.png" />
     <Content Include="Images\Designer\gildan_shortsleeve_tee_front.png" />
     <Content Include="Scripts\angular.js" />
+    <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\Designer\app.js" />
     <Content Include="Scripts\Designer\designerController.js" />
+    <Content Include="Scripts\Designer\Elements\boundingBox.js" />
     <Content Include="Scripts\Designer\Elements\Controls\borderControl.js" />
+    <Content Include="Scripts\Designer\Elements\Controls\deleteControl.js" />
+    <Content Include="Scripts\Designer\Elements\Controls\resizeControl.js" />
     <Content Include="Scripts\Designer\Elements\Controls\rotateControl.js" />
     <Content Include="Scripts\Designer\Elements\elementControls.js" />
     <Content Include="Scripts\Designer\Elements\scene.js" />
@@ -267,6 +280,8 @@
     <Content Include="Scripts\knockout-2.2.0.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\require.js" />
+    <Content Include="Scripts\ui-bootstrap-tpls-0.10.0.js" />
+    <Content Include="template\popover\popover.html" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

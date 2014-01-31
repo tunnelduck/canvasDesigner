@@ -1,7 +1,9 @@
 ﻿define(
     ['Elements/Controls/borderControl',
-     'Elements/Controls/rotateControl'],
-    function (borderControl, rotateControl) {
+     'Elements/Controls/rotateControl',
+     'Elements/Controls/resizeControl',
+    'Elements/Controls/deleteControl'],
+    function (borderControl, rotateControl, resizeControl, deleteControl) {
 
     var elementControls = function () {
 
@@ -15,32 +17,41 @@
 
         self.controls = {
             borderControl: new borderControl(),
-            rotateControl: new rotateControl()
+            rotateControl: new rotateControl(),
+            resizeControl: new resizeControl(),
+            deleteControl: new deleteControl()
         };
 
         self.getControlAtPoint = function(x, y) {
             if (self.controls.rotateControl.isPointInArea({ x: x, y: y }, self.parentBoundingBox, self.rotation || 0)) {
                 return self.controls.rotateControl;
             }
+            
+            if (self.controls.resizeControl.isPointInArea({ x: x, y: y }, self.parentBoundingBox, self.rotation || 0)) {
+                return self.controls.resizeControl;
+            }
+            
+            if (self.controls.deleteControl.isPointInArea({ x: x, y: y }, self.parentBoundingBox, self.rotation || 0)) {
+                return self.controls.deleteControl;
+            }
 
             return null;
+        };
+
+        self.hide = function() {
+            //clear canvas
+            self.canvasContext.clearRect(0, 0, self.canvas.width, self.canvas.height);
         };
 
         self.draw = function (boundingBox, rotation) {
             //clear canvas
             self.canvasContext.clearRect(0, 0, self.canvas.width, self.canvas.height);
 
-            self.canvasContext.save();
-            
-            //move canvas origin to be in middle of parent bounding box and rotate to match parent
-            self.canvasContext.translate(boundingBox.x + (boundingBox.width / 2), boundingBox.y + (boundingBox.height / 2));
-            self.canvasContext.rotate(rotation * (Math.PI / 180));
-
             //draw element controls
-            self.controls.borderControl.draw(self.canvasContext, boundingBox);
-            self.controls.rotateControl.draw(self.canvasContext, boundingBox);
-            
-            self.canvasContext.restore();
+            self.controls.borderControl.draw(self.canvasContext, boundingBox, rotation);
+            self.controls.rotateControl.draw(self.canvasContext, boundingBox, rotation);
+            self.controls.resizeControl.draw(self.canvasContext, boundingBox, rotation);
+            self.controls.deleteControl.draw(self.canvasContext, boundingBox, rotation);
 
             self.rotation = rotation;
             self.parentBoundingBox = boundingBox;

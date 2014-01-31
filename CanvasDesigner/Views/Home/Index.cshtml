@@ -1,21 +1,231 @@
 ﻿@{ Layout = null; }
 
     @Scripts.Render("~/bundles/jquery")
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
-
-<div id="body">
-    <section ng-controller="DesignerController">
-        <a ng-click="addText()" class="btn btn-default">Add Text</a>
-    </section>
-    <div class="designer-canvas-container" style="position: relative; display: inline-block; width: 500px; height: 489px;">
+    </head>
+    <body ng-controller="DesignerController">
         
-    </div>
+        <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+        
+        <div class="container">
 
-    <script src="/Scripts/require.js" data-main="/Scripts/Designer/main"></script>
+            <div class="row">
+                <div class="col-lg-4">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#" data-ng-click="">Add Text</a></li>
+                        <li><a href="#">Add Art</a></li>
+                        <li><a href="#">Add Names</a></li>
+                    </ul>
+                
+                    <div data-ng-show="mode == 'addText'">
+                        <form role="form">
+                            <div class="form-group">
+                                <label for="addTextInput">Add Text</label>
+                                <textarea rows="2" class="form-control center-block" id="addTextInput" data-ng-model="addTextInput"></textarea>
+                            </div>
+                            <div class="text-center">
+                                <button ng-click="addText()" class="btn btn-warning">Add Text</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div data-ng-show="mode == 'editText'">
+                        <form role="form">
+                            <div class="form-group">
+                                <label for="addTextInput">Add Text</label>
+                                <textarea rows="2" class="form-control center-block" id="addTextInput" data-ng-model="addTextInput"></textarea>
+                            </div>
+                            <div class="text-center">
+                                <button ng-click="updateText()" class="btn btn-warning">Update Text</button>
+                            </div>
+                        </form>
+                    
+                        <h5>Text Settings</h5>
+                        <form role="form">
+                            <div class="form-group">
+                                <label>Font</label>
+                                <div data-placement="right" title="Select Font" class="js-choose-font dropdown form-control">
+                                    <div class="selected-font js-selected-font"></div>
+                                    <span class="caret float-right"></span>
+                                </div>
+
+                                <div class="js-choose-font-wrapper" style="display: none">
+                                    <ul class="font-box">
+                                        <li data-ng-click="updateFont('ariblk.ttf', section, $event)">
+                                            <div class="font-arial">Arial</div>
+                                        </li>
+                                        <li data-ng-click="updateFont('timr65w.ttf', section, $event)">
+                                            <div class="font-times">Times</div>
+                                        </li>
+                                        <li data-ng-click="updateFont('green fuzregular.ttf', section, $event)">
+                                            <div class="font-green-fuz">Green Fuz</div>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="form-group float-left col-lg-3">
+                                    <label class="center-block">Size</label>
+                                    <input class="form-control" type="text" data-ng-model="currentElement.size" data-ng-keyup="onSizeUpdate()" data-ng-blur="onSizeBlur()"/>
+                                </div>
+                                <div class="form-group float-left col-lg-3">
+                                    <label class="center-block">Color</label>
+                                    <div data-placement="right" title="Select Font Color" class="js-choose-font-color dropdown form-control">
+                                        <div class="color-sample float-right" data-ng-style="currentElement.color"></div>
+                                        <span class="caret float-right"></span>
+                                    </div>
+                                    <div class="js-choose-font-color-wrapper" style="display: none">
+                                        <ul class="textColorBox">
+                                            <li><a style="background: #FFFFFF;" data-ng-click="updateTextColor('#FFFFFF')"></a></li>
+                                            <li><a style="background: #000008;" data-ng-click="updateTextColor('#000008')"></a></li>
+                                            <li><a style="background: #ECE8C4;" data-ng-click="updateTextColor('#ECE8C4')"></a></li>
+                                            <li><a style="background: #FFEDBA;" data-ng-click="updateTextColor('#FFEDBA')"></a></li>
+                                            <li><a style="background: #FCCC99;" data-ng-click="updateTextColor('#FCCC99')"></a></li>
+                                            <li><a style="background: #C8CACC;" data-ng-click="updateTextColor('#C8CACC')"></a></li>
+                                            <li><a style="background: #ADAFB1;" data-ng-click="updateTextColor('#ADAFB1')"></a></li>
+                                            <li><a style="background: #706F73;" data-ng-click="updateTextColor('#706F73')"></a></li>
+                                            <li><a style="background: #0C1037;" data-ng-click="updateTextColor('#0C1037')"></a></li>
+                                            <li><a style="background: #1A205E;" data-ng-click="updateTextColor('#1A205E')"></a></li>
+                                            <li><a style="background: #172F89;" data-ng-click="updateTextColor('#172F89')"></a></li>
+                                            <li><a style="background: #2343A3;" data-ng-click="updateTextColor('#2343A3')"></a></li>
+                                            <li><a style="background: #3EC3E8;" data-ng-click="updateTextColor('#3EC3E8')"></a></li>
+                                            <li><a style="background: #ACDFEC;" data-ng-click="updateTextColor('#ACDFEC')"></a></li>
+                                            <li><a style="background: #005D64;" data-ng-click="updateTextColor('#005D64')"></a></li>
+                                            <li><a style="background: #193624;" data-ng-click="updateTextColor('#193624')"></a></li>
+                                            <li><a style="background: #11711C;" data-ng-click="updateTextColor('#11711C')"></a></li>
+                                            <li><a style="background: #6FA810;" data-ng-click="updateTextColor('#6FA810')"></a></li>
+                                            <li><a style="background: #FFC000;" data-ng-click="updateTextColor('#FFC000')"></a></li>
+                                            <li><a style="background: #F7F700;" data-ng-click="updateTextColor('#F7F700')"></a></li>
+                                            <li><a style="background: #BB8E0A;" data-ng-click="updateTextColor('#BB8E0A')"></a></li>
+                                            <li><a style="background: #F05D10;" data-ng-click="updateTextColor('#F05D10')"></a></li>
+                                            <li><a style="background: #765230;" data-ng-click="updateTextColor('#765230')"></a></li>
+                                            <li><a style="background: #CC5000;" data-ng-click="updateTextColor('#CC5000')"></a></li>
+                                            <li><a style="background: #550F1C;" data-ng-click="updateTextColor('#550F1C')"></a></li>
+                                            <li><a style="background: #BA1511;" data-ng-click="updateTextColor('#BA1511')"></a></li>
+                                            <li><a style="background: #C92786;" data-ng-click="updateTextColor('#C92786')"></a></li>
+                                            <li><a style="background: #E35FAC;" data-ng-click="updateTextColor('#E35FAC')"></a></li>
+                                            <li><a style="background: #D3ADD2;" data-ng-click="updateTextColor('#D3ADD2')"></a></li>
+                                            <li><a style="background: #B663AF;" data-ng-click="updateTextColor('#B663AF')"></a></li>
+                                            <li><a style="background: #40237C;" data-ng-click="updateTextColor('#40237C')"></a></li>
+                                            <li><a style="background: #315327;" data-ng-click="updateTextColor('#315327')"></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="form-group float-left col-lg-6">
+                                    <label class="center-block">Align</label>
+                                    <div class="btn-group">
+                                        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-align-left"></span></button>
+                                        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-align-center"></span></button>
+                                        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-align-right"></span></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group float-left col-lg-3">
+                                    <label class="center-block">Rotation</label>
+                                    <input class="form-control" type="text" data-ng-model="currentElement.rotation" data-ng-keyup="onRotationUpdate()"/>
+                                </div>
+                                <div class="form-group float-left col-lg-3">
+                                    <label class="center-block">Center</label>
+                                    <button class="btn btn-default" type="button" data-ng-click="center()"><span class="glyphicon glyphicon-align-justify"></span></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                
+                </div>
+                <div class="col-lg-8">
+                    <div class="designer-canvas-container" style="position: relative; display: inline-block; width: 500px; height: 489px;">
+        
+                    </div>
+                </div>
+
+            </div>
+
+            <script src="~/Scripts/bootstrap.js"></script>
+            <script src="/Scripts/require.js" data-main="/Scripts/Designer/main"></script>
     
-    <style>
-        .designer-canvas-container { width: 500px;height: 489px;border: 1px solid #000; background: url('/Images/Designer/gildan_shortsleeve_tee_front.png')}
-    </style>
+            <style>
+                .selected-font {
+                    height: 16px;
+                    background-image: url('/Images/Designer/font-selection.png');
+                    background-repeat: no-repeat;
+                    width: 61px;
+                    float: left;
+                }
 
-</div>
+                .designer-canvas-container { width: 500px;height: 489px;background: url('/Images/Designer/gildan_shortsleeve_tee_front.png')}
+                textarea{ width: 200px; min-width:200px; max-width:200px; }
+                
+                .textColorBox {
+                    width: 160px;
+                }
+                .textColorBox li a {
+                    width: 30px;
+                    height: 30px;
+                    float: left;
+                    border: 1px solid #ddd;
+                    cursor: pointer;
+                }
+                .textColorBox li {
+                    list-style: none;
+                    float: left;
+                    padding: 5px;
+                }
+                .color-sample {
+                    width: 25px;
+                    height: 25px;
+                    border: 1px solid #ddd;
+                    display: inline-block;
+                }
+
+
+                .font-arial {
+                    background-image: url('/Images/Designer/font-selection.png');
+                    background-position: 0px 0px;
+                    background-repeat: no-repeat;
+                    height: 16px;
+
+                }
+                .font-times {
+                    background-image: url('/Images/Designer/font-selection.png');
+                    background-position: 0px -20px;
+                    background-repeat: no-repeat;
+                    height: 16px;
+                }
+                .font-green-fuz {
+                    background-image: url('/Images/Designer/font-selection.png');
+                    background-position: 0px -36px;
+                    background-repeat: no-repeat;
+                    height: 16px;
+                }
+                .font-box {
+                    width: 160px;
+                }
+
+                .font-box li {
+                    list-style: none;
+                    padding: 5px;
+                    text-indent: -999em;
+                    letter-spacing: -999em;
+                    overflow: hidden;
+                    cursor: pointer;
+                }
+
+                .popover {
+                    z-index: 999;
+                }
+                .dropdown {
+                    cursor: pointer;
+                }
+            </style>
+        
+        </div>
+    </body>
+</html>
+
