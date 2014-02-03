@@ -13,7 +13,17 @@
             canvasContext.rotate(rotation * (Math.PI / 180));
 
             canvasContext.beginPath();
-            canvasContext.mozDash = [5, 2];
+
+            if (canvasContext.setLineDash) {
+                canvasContext.setLineDash([5, 2]);
+            }
+            else if ('mozDash' in canvasContext) {
+                canvasContext.mozDash = [5, 2];
+            }
+            else if ('webkitLineDash' in canvasContext) {
+                canvasContext.webkitLineDash = [5, 2];
+            }
+
             canvasContext.mozDashOffset = 10;
             canvasContext.rect(-boundingBox.width / 2, -boundingBox.height / 2, boundingBox.width, boundingBox.height);
             canvasContext.stroke();

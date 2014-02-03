@@ -21,7 +21,7 @@
             resizeControl: new resizeControl(),
             deleteControl: new deleteControl()
         };
-
+        
         self.getControlAtPoint = function(x, y) {
             if (self.controls.rotateControl.isPointInArea({ x: x, y: y }, self.parentBoundingBox, self.rotation || 0)) {
                 return self.controls.rotateControl;
@@ -59,7 +59,7 @@
 
         (function init() {
             
-            var jCanvas = $($.parseHTML('<canvas width="{0}" height="{1}" style="position:absolute;"></canvas>'.replace('{0}', 500).replace('{1}', 489)));
+            var jCanvas = $($.parseHTML('<canvas width="{0}" height="{1}" style="position:absolute;z-index:887"></canvas>'.replace('{0}', 500).replace('{1}', 489)));
             var canvas = jCanvas[0];
 
             self.canvas = canvas;

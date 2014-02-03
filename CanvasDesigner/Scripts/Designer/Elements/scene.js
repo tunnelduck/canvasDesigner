@@ -8,8 +8,10 @@
 
         var elements = [];
         var offset = null;
+        var layerCounter = 600;
 
-        self.addText = function(initialParams) {
+        self.addText = function (initialParams) {
+            initialParams.layerOrder = layerCounter++;
             var newTextElement = new textElement(initialParams);
 
             self.selectedElement = newTextElement;
@@ -18,6 +20,30 @@
             //todo: add this via angular
             $(".designer-canvas-container").append(newTextElement.canvas);
             $(".designer-canvas-container").append(newTextElement.elementControls.canvas);
+        };
+
+        self.changeLayerOrder = function(direction) {
+
+            var closestElement = null;
+            var currentLayerOrder = self.selectedElement.layerOrder;
+
+            var i;
+            for (i = 0; i < elements.length; ++i) {
+                var elementLayerOrder = elements[i].layerOrder;
+                if (direction < 0 && (elementLayerOrder < currentLayerOrder && (closestElement == null || elementLayerOrder > closestElement.layerOrder))) {
+                    closestElement = elements[i];
+                } else if (direction > 0 && (elementLayerOrder > currentLayerOrder && (closestElement == null || elementLayerOrder < closestElement.layerOrder))) {
+                    closestElement = elements[i];
+                }
+            }
+            
+            if (closestElement != null) {
+                var oldLayerNumber = self.selectedElement.layerOrder,
+                    newLayerNumber = closestElement.layerOrder;
+
+                self.selectedElement.setLayerOrder(newLayerNumber);
+                closestElement.setLayerOrder(oldLayerNumber);
+            }
         };
 
         self.setTextColor = function(color) {
@@ -117,7 +143,15 @@
 
 
                 if (currentElement.getCurrentOperation() == 'delete') {
-
+                    currentElement.delete();
+                    var i;
+                    for (i = 0; i < elements.length; ++i) {
+                        if (currentElement == elements[i]) {
+                            elements.splice(i, 1);
+                            break;
+                        }
+                    }
+                    
                     return;
                 }
 

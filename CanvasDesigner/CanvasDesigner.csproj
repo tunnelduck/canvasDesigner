@@ -262,6 +262,7 @@
     <Content Include="Scripts\Designer\Elements\elementControls.js" />
     <Content Include="Scripts\Designer\Elements\scene.js" />
     <Content Include="Scripts\Designer\Elements\textElement.js" />
+    <Content Include="Scripts\Designer\Logic\affineTransform.js" />
     <Content Include="Scripts\Designer\Logic\collision.js" />
     <Content Include="Scripts\Designer\Logic\Matrix2D.js" />
     <Content Include="Scripts\Designer\main.js" />

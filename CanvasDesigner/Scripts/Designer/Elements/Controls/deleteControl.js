@@ -20,25 +20,31 @@
 
         self.draw = function (canvasContext, boundingBox, rotation) {
 
+            if (!deleteImage) {
+
+                deleteImage = new Image();
+                deleteImage.onload = function () {
+                    drawImage(canvasContext, boundingBox, rotation);
+                };
+                deleteImage.src = "/images/designer/trash-handle.png";
+            } else {
+                drawImage(canvasContext, boundingBox, rotation);
+            }
+            
+            
+        };
+
+        function drawImage(canvasContext, boundingBox, rotation) {
             canvasContext.save();
 
             //move canvas origin to be in middle of parent bounding box and rotate to match parent
             canvasContext.translate(boundingBox.x + (boundingBox.width / 2), boundingBox.y + (boundingBox.height / 2));
             canvasContext.rotate(rotation * (Math.PI / 180));
-
-            if (!deleteImage) {
-
-                deleteImage = new Image();
-                deleteImage.onload = function () {
-                    canvasContext.drawImage(deleteImage, -10, boundingBox.height / 2 + 10);
-                };
-                deleteImage.src = "/images/designer/trash-handle.png";
-            } else {
-                canvasContext.drawImage(deleteImage, -10, boundingBox.height / 2 + 10);
-            }
             
+            canvasContext.drawImage(deleteImage, -10, boundingBox.height / 2 + 10);
+
             canvasContext.restore();
-        };
+        }
     };
 
     return rotateControl;

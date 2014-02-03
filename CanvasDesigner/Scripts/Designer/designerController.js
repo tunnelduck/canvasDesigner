@@ -8,18 +8,39 @@
 
         $scope.currentElement = {};
 
+        $scope.elementSelectedType = null;
+        
+        $scope.tabClick = function (tab) {
+            switch (tab) {
+                case 'text':
+                    $scope.mode = 'addText';
+                    break;
+                case 'shirt':
+                    $scope.mode = 'shirtType';
+                    break;
+                case 'art':
+                    $scope.mode = 'addArt';
+                    break;
+                case 'names':
+                    $scope.mode = 'addNames';
+                    break;
+            }
+        };
+
         $scope.addText = function () {
 
-            $scope.mode = 'editText';
+            $scope.mode = 'addText';
             getCurrentScene().addText({
                 text: $scope.addTextInput,
                 color: '000000',
                 rotationUpdate: rotateUpdateFromDesigner,
                 sizeUpdate: sizeUpdateFromDesigner,
+                onDelete: deleteFromDesigner,
                 fontName: $scope.currentElement.fontName
             });
 
             $scope.currentElement = mapDesignerPropertiesToController(getCurrentScene().getDesignerProperties());
+            $scope.elementSelectedType = 'text';
         };
         
         function getCurrentScene() {
@@ -108,6 +129,12 @@
             scenes[0].setRotation(rotation);
         };
 
+        $scope.updateShirtColor = function(color) {
+            $scope.shirtColor = { 'background-color': color };
+        };
+
+        $scope.shirtColor = { 'background-color': '#ffffff' };
+
         function rotateUpdateFromDesigner(rotation) {
             
             if (rotation < 0) {
@@ -119,25 +146,43 @@
         };
         
         function unselectFromDesigner() {
-            if ($scope.mode == 'editText') {
+            if ($scope.mode == 'addText') {
                 $scope.mode = 'addText';
                 $scope.addTextInput = '';
+                $scope.elementSelectedType = null;
                 $scope.$apply();
             }
+
         }
         
         function selectFromDesigner(element) {
             if (element.elementType == 'text') {
-                $scope.mode = 'editText';
+                $scope.mode = 'addText';
                 $scope.addTextInput = element.text;
                 $scope.currentElement = mapDesignerPropertiesToController(getCurrentScene().getDesignerProperties());
+                $scope.elementSelectedType = 'text';
                 $scope.$apply();
+                
             }
         }
         
         function sizeUpdateFromDesigner(size) {
             $scope.currentElement.size = Math.floor(size);
             $scope.$apply();
+        }
+        
+        function deleteFromDesigner() {
+            $scope.currentElement = {};
+            $scope.elementSelectedType = null;
+            $scope.$apply();
+        }
+
+        $scope.test = function() {
+            alert("daf");
+        };
+
+        $scope.layerChange = function(direction) {
+            getCurrentScene().changeLayerOrder(direction);
         };
 
         $scope.changeFont = function(obj, event) {

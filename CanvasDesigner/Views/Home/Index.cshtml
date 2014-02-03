@@ -15,31 +15,71 @@
             <div class="row">
                 <div class="col-lg-4">
                     <ul class="nav nav-tabs">
-                        <li class="active"><a href="#" data-ng-click="">Add Text</a></li>
-                        <li><a href="#">Add Art</a></li>
-                        <li><a href="#">Add Names</a></li>
+                        <li ng-class="{active: mode=='shirtType'}"><a href="#" data-ng-click="tabClick('shirt')">Shirt</a></li>
+                        <li ng-class="{active: mode=='addText' || mode=='editText'}"><a href="#" data-ng-click="tabClick('text')">Add Text</a></li>
+                        <li ng-class="{active: mode=='addArt'}"><a href="#" data-ng-click="tabClick('art')">Add Art</a></li>
+                        <li ng-class="{active: mode=='addNames'}"><a href="#" data-ng-click="tabClick('names')">Add Names</a></li>
                     </ul>
+                    
+                    <div data-ng-show="mode == 'shirtType'">
+                        <form role="form">
+                            <div class="form-group">
+                                <label for="shirt-type">Shirt Type</label>
+                                <select class="form-control" id="shirt-type">
+                                    <option>Basic - Budget Tee</option>
+                                    <option>Basic - Classic Tee</option>
+                                    <option>Basic - Fashion Tee</option>
+                                    <option>Longsleeve - Budget (Gildan)</option>
+                                    <option>Longsleeve - Classic (Hanes)</option>
+                                    <option>Longsleeve - Fashion (American Apparel)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Color</label>
+                                <ul class="shirt-color">
+                                    <li style="background-color: #FFFFFF" data-ng-click="updateShirtColor('#FFFFFF')">
+                                    </li>
+                                    <li style="background-color: #E5D3C1" data-ng-click="updateShirtColor('#E5D3C1')">
+                                    </li>
+                                    <li style="background-color: #B5B2AA" data-ng-click="updateShirtColor('#B5B2AA')">
+                                    </li>
+                                    <li style="background-color: #ABD763" data-ng-click="updateShirtColor('#ABD763')">
+                                    </li>
+                                    <li style="background-color: #5091CD" data-ng-click="updateShirtColor('#5091CD')">
+                                    </li>
+                                    <li style="background-color: #FCA311" data-ng-click="updateShirtColor('#FCA311')">
+                                    </li>
+                                    <li style="background-color: #222D92" data-ng-click="updateShirtColor('#222D92')">
+                                    </li>
+                                    <li style="background-color: #111133" data-ng-click="updateShirtColor('#111133')">
+                                    </li>
+                                    <li style="background-color: #331D5C" data-ng-click="updateShirtColor('#331D5C')">
+                                    </li>
+                                </ul>
+                            </div>
+                        </form>
+                    </div>
                 
-                    <div data-ng-show="mode == 'addText'">
+                    <div data-ng-show="mode == 'addText' && elementSelectedType != 'text'">
                         <form role="form">
                             <div class="form-group">
                                 <label for="addTextInput">Add Text</label>
                                 <textarea rows="2" class="form-control center-block" id="addTextInput" data-ng-model="addTextInput"></textarea>
                             </div>
                             <div class="text-center">
-                                <button ng-click="addText()" class="btn btn-warning">Add Text</button>
+                                <button ng-click="addText()" class="btn btn-primary">Add Text</button>
                             </div>
                         </form>
                     </div>
 
-                    <div data-ng-show="mode == 'editText'">
+                    <div data-ng-show="mode == 'addText' && elementSelectedType == 'text'">
                         <form role="form">
                             <div class="form-group">
                                 <label for="addTextInput">Add Text</label>
                                 <textarea rows="2" class="form-control center-block" id="addTextInput" data-ng-model="addTextInput"></textarea>
                             </div>
                             <div class="text-center">
-                                <button ng-click="updateText()" class="btn btn-warning">Update Text</button>
+                                <button ng-click="updateText()" class="btn btn-primary">Update Text</button>
                             </div>
                         </form>
                     
@@ -133,24 +173,95 @@
                                     <label class="center-block">Center</label>
                                     <button class="btn btn-default" type="button" data-ng-click="center()"><span class="glyphicon glyphicon-align-justify"></span></button>
                                 </div>
+                                <div class="form-group float-left col-lg-6">
+                                    <label class="center-block">Layer Order</label>
+                                    <div class="btn-group">
+                                        <button class="btn btn-default" type="button" data-ng-click="layerChange(1)"><span class="glyphicon glyphicon-arrow-up"></span></button>
+                                        <button class="btn btn-default" type="button" data-ng-click="layerChange(-1)"><span class="glyphicon glyphicon-arrow-down"></span></button>
+                                    </div>
+                                </div>
                             </div>
                         </form>
                     </div>
+                    
+                    <div data-ng-show="mode == 'addArt'">
+                        <form role="form" class="text-center">
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+                                    Browse Clipart
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                OR
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-lg">Upload Image</button>
+                            </div>
+                        </form>
+                        
+                    </div>
 
-                
+                    <div data-ng-show="mode == 'addNames'">
+                        The Allied Shirts Team is hard at work to make this option available online. If you would like to add names and numbers to the back of your shirt, please call 800-273-4544 for assistance in pricing and layout options available.
+                    </div>
                 </div>
                 <div class="col-lg-8">
-                    <div class="designer-canvas-container" style="position: relative; display: inline-block; width: 500px; height: 489px;">
+                    <div class="designer-canvas-container" style="position: relative; display: inline-block; width: 500px; height: 489px;"  data-ng-style="shirtColor">
         
                     </div>
                 </div>
 
+            </div>
+            
+            
+            
+            
+            
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="myModalLabel">Browse Clipart</h4>
+                        </div>
+                        <div class="modal-body">
+                            <button data-ng-click="test()"></button>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <script src="~/Scripts/bootstrap.js"></script>
             <script src="/Scripts/require.js" data-main="/Scripts/Designer/main"></script>
     
             <style>
+                .shirt-color {
+                    list-style: none;
+                    margin: 0;
+                }
+
+                .shirt-color li {
+                    list-style: none;
+                    float: left;
+                    margin: 5px;
+                    width: 25px;
+                    height: 25px;
+                    border: 1px solid #ddd;
+                    display: inline-block;
+                    cursor: pointer;
+                }
+
+
+                
+                .nav-tabs {
+                    margin-bottom: 15px;
+                }
+
                 .selected-font {
                     height: 16px;
                     background-image: url('/Images/Designer/font-selection.png');

@@ -1,4 +1,4 @@
-﻿define(['Elements/elementControls', 'Logic/collision', 'Logic/Matrix2D'], function (elementControls, collision, matrix2d) {
+﻿define(['Elements/elementControls', 'Logic/collision', 'Logic/affineTransform', 'Logic/matrix2d'], function (elementControls, collision, affineTransform, matrix2d) {
 
     var textElement = function (initialParams) {
 
@@ -11,10 +11,9 @@
         self.color = initialParams.color;
         self.elementType = 'text';
         self.size = 48;
+        self.layerOrder = initialParams.layerOrder;
         
         self.elementControls = new elementControls();
-
-        self.layerOrder = 1;
 
         var selectedOperation = 'move';
 
@@ -25,6 +24,11 @@
         self.updateText = function (text) {
             self.text = text;
             loadImage();
+        };
+
+        self.setLayerOrder = function(order) {
+            self.layerOrder = order;
+            $(self.canvas).css({ 'z-index': order });
         };
 
         self.setColor = function(color) {
@@ -76,6 +80,13 @@
             return 'inherit';
         };
 
+        self.delete = function() {
+            $(self.canvas).remove();
+            $(self.elementControls.canvas).remove();
+            initialParams.onDelete();
+        };
+
+        var clickOffset = null;
         self.registerClick = function (x, y) {
             //this is really just to render the controls, perhaps call something that just does that only
             draw();
@@ -88,11 +99,16 @@
 
             var controlElement = self.elementControls.getControlAtPoint(x, y);
             if (controlElement && controlElement.controlType == 'rotate') {
+                clickOffset = getOffsetFromControl({ x: x, y: y }, controlElement);
+                clickOffset.y += self.scaledBoundingBox.height / 2 + 30;
                 selectedOperation = 'rotate';
                 return;
             }
 
             if (controlElement && controlElement.controlType == 'resize') {
+                clickOffset = getOffsetFromControl({ x: x, y: y }, controlElement);
+                clickOffset.y -= 10;
+                clickOffset.x -= 10;
                 selectedOperation = 'resize';
                 return;
             }
@@ -104,6 +120,19 @@
 
             selectedOperation = null;
         };
+
+        function getOffsetFromControl(clickPoint, control) {
+            var origin = {
+                x: self.scaledBoundingBox.x + self.scaledBoundingBox.width / 2,
+                y: self.scaledBoundingBox.y + self.scaledBoundingBox.height / 2
+            };
+
+            var unrotatedPoint = affineTransform.rotatePoint(origin, clickPoint, self.rotation);
+            var registrationPoint = control.getRegistrationPoint(self.scaledBoundingBox);
+
+            var offset = { x: registrationPoint.x - unrotatedPoint.x, y: registrationPoint.y - unrotatedPoint.y };
+            return offset;
+        }
 
         self.registerMouseup = function() {
             selectedOperation = null;
@@ -159,31 +188,43 @@
                 self.scaledBoundingBox.y += delta.y;
                 
             } else if (selectedOperation == 'rotate') {
-                var angle = Math.atan2(newPosition.y - (self.boundingBox.y - 7.5), newPosition.x - (self.boundingBox.x + self.boundingBox.width / 2));
+                var origin = {
+                    x: self.scaledBoundingBox.x + self.scaledBoundingBox.width / 2,
+                    y: self.scaledBoundingBox.y + self.scaledBoundingBox.height / 2
+                };
+
+                
+                var unrotatedOffset = affineTransform.rotatePoint(origin, newPosition, self.rotation);
+                unrotatedOffset.x += clickOffset.x;
+                unrotatedOffset.y += clickOffset.y;
+                unrotatedOffset = affineTransform.rotatePoint(origin, unrotatedOffset, self.rotation * -1);
+
+                var newPositionRegistrationPoint = unrotatedOffset;
+
+                var angle = Math.atan2(newPositionRegistrationPoint.y - origin.y, newPositionRegistrationPoint.x - origin.x);
+
+                //var angle = Math.atan2(newPosition.y - (self.boundingBox.y - 7.5), newPosition.x - (self.boundingBox.x + self.boundingBox.width / 2));
                 self.rotation = Math.floor(angle * 180 / Math.PI);
                 initialParams.rotationUpdate(self.rotation);
             } else if (selectedOperation == 'resize') {
                 //for now, allow only equal x and y scaling
+                var origin = {
+                    x: self.scaledBoundingBox.x + self.scaledBoundingBox.width / 2,
+                    y: self.scaledBoundingBox.y + self.scaledBoundingBox.height / 2
+                };
                 
-                var xOffset = self.boundingBox.x + self.boundingBox.width / 2;
-                var yOffset = self.boundingBox.y + self.boundingBox.height / 2;
+                var unrotatedOffset = affineTransform.rotatePoint(origin, newPosition, self.rotation);
+                unrotatedOffset.x += clickOffset.x;
+                unrotatedOffset.y += clickOffset.y;
 
-                var rotationMatrix = new matrix2d().identity().translate(-xOffset, -yOffset).rotate(-self.rotation * Math.PI / 180).translate(xOffset, yOffset);
-                var unrotatedPoint = rotationMatrix.transformPoint(newPosition.x, newPosition.y);
+                var heightScale = ((unrotatedOffset.y - origin.y) * 2) / self.boundingBox.height;
+                var widthScale = ((unrotatedOffset.x - origin.x) * 2) / self.boundingBox.width;
 
-                //todo: scaling should really just be based on how far mouse is from center
+                self.scale = heightScale < widthScale ? heightScale : widthScale;
 
-                //hard coded value comes from resize handle positioning
-                var xEdge = self.scaledBoundingBox.x + self.scaledBoundingBox.width + 20;
-                var yEdge = self.scaledBoundingBox.y + self.scaledBoundingBox.height + 20;
-
-                var scaleX = (self.scaledBoundingBox.width + delta.x) / (self.boundingBox.width);
-                var scaleY = (self.scaledBoundingBox.height + delta.y) / (self.boundingBox.height);
-
-                if (unrotatedPoint.x > xEdge && unrotatedPoint.y > yEdge && scaleX > 0.2 && scaleY > 0.2) {
-                    self.scale = scaleX > scaleY ? scaleX : scaleY;
-                } else if (scaleX > 0.2 && scaleY > 0.2) {
-                    self.scale = scaleX < scaleY ? scaleX : scaleY;
+                //dont allow item to get super small and eventually flip
+                if (self.scale < .2) {
+                    self.scale = .2;
                 }
 
                 self.scaledBoundingBox = getScaledBoundingBox();
@@ -192,19 +233,6 @@
 
             draw();
         };
-
-        function roundUp(numToRound, multiple) {
-            if (multiple == 0) {
-                return numToRound;
-            }
-
-            var remainder = numToRound % multiple;
-            if (remainder == 0) {
-                return numToRound;
-            }
-            
-            return numToRound + multiple - remainder;
-        }
 
         function getScaledBoundingBox() {
             var xOffset = self.boundingBox.x + self.boundingBox.width / 2;
@@ -276,7 +304,7 @@
         }
         
         (function init() {
-            var jCanvas = $($.parseHTML('<canvas width="{0}" height="{1}" style="position:absolute;"></canvas>'.replace('{0}', 500).replace('{1}', 489)));
+            var jCanvas = $($.parseHTML('<canvas width="{0}" height="{1}" style="position:absolute;z-index:{2}"></canvas>'.replace('{0}', 500).replace('{1}', 489).replace("{2}", self.layerOrder)));
             var canvas = jCanvas[0];
 
             self.canvasContext = canvas.getContext("2d");
